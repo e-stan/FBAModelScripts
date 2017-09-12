@@ -10,13 +10,17 @@ m5 = Metabolite('AC','AC')
 m6 = Metabolite('ABC','ABC')
 
 """
+->A
+->B
 A + B -> AB
+AB -> A + B
+->AB
+
 A + C -> AC
 AB + C <=> ABC
 AC + B <=> ABC
 A + B + C -> ABC
-->A
-->B
+
 ->C
 ABC->
 
@@ -25,9 +29,17 @@ ABC->
 
 r1 = Reaction('r1')
 r1.lower_bound = 0
-r1.upper_bound = 1000
+r1.upper_bound = 10
 r1.add_metabolites({m1:-1,m2:-1,m4:1})
 r1.gene_reaction_rule = 'A'
+
+r2 = Reaction('r2')
+r2.lower_bound = 2
+r2.upper_bound = 10
+r2.add_metabolites({m1:1,m2:1,m4:-1})
+r2.gene_reaction_rule = 'A'
+
+"""
 
 r2 = Reaction('r2')
 r2.lower_bound = 0
@@ -68,34 +80,35 @@ r7.lower_bound = 0
 r7.upper_bound = 1000
 r7.add_metabolites({m1:-1,m2:-1,m3:-1,m6:1})
 r7.gene_reaction_rule = 'G'
-
+"""
 r11 = Reaction('r11')
 r11.lower_bound = 0
 r11.upper_bound = 1000
-r11.add_metabolites({m6:-1})
+r11.add_metabolites({m4:-1})
 r11.gene_reaction_rule = 'G'
 
 r8 = Reaction('r8')
-r8.lower_bound = 0
-r8.upper_bound = 1000
+r8.lower_bound = 5
+r8.upper_bound = 5
 r8.add_metabolites({m1:1})
 r8.gene_reaction_rule = 'G'
 
 r9 = Reaction('r9')
-r9.lower_bound =0
-r9.upper_bound = 1000
+r9.lower_bound =5
+r9.upper_bound = 5
 r9.add_metabolites({m2:1})
 r9.gene_reaction_rule = 'G'
-
+"""
 r10 = Reaction('r10')
 r10.lower_bound = 0
 r10.upper_bound = 1000
 r10.add_metabolites({m3:1})
 r10.gene_reaction_rule = 'G'
-
+"""
 myModel = cobra.Model('toyModel')
-myModel.add_reactions([r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11])
-myModel.objective = 'r7'
+#myModel.add_reactions([r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11])
+myModel.add_reactions([r1,r2,r11,r8,r9])
+myModel.objective = 'r11'
 
 cobra.io.write_sbml_model(myModel,'toyModel.xml',use_fbc_package=False)
 

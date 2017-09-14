@@ -1,5 +1,4 @@
 from cobra.core import *
-import cobra
 import cobra.io
 
 

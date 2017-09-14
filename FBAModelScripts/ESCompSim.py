@@ -32,7 +32,7 @@ r2.gene_reaction_rule = 'EC'
 r3 = Reaction('r3')
 r3.lower_bound = 0
 r3.upper_bound = 1000
-r3.add_metabolites({m3:-1,m2:1,m4:1})
+r3.add_metabolites({m3:-1,m1:1,m4:1})
 r3.gene_reaction_rule = 'P'
 
 #->E
@@ -56,7 +56,7 @@ r6.upper_bound = 1000
 r6.add_metabolites({m2:-1})
 r6.gene_reaction_rule = 'S'
 
-#S->
+#P->
 r7 = Reaction('r7')
 r7.lower_bound = 0
 r7.upper_bound = 1000

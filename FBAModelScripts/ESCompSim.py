@@ -19,13 +19,13 @@ m4 = Metabolite('P','P')
 #E + S -> ES
 r1 = Reaction('r1')
 r1.lower_bound = 0
-r1.upper_bound = 10
+r1.upper_bound = 1000
 r1.add_metabolites({m1:-1,m2:-1,m3:1})
 r1.gene_reaction_rule = 'EC'
 #ES -> E + S
 r2 = Reaction('r2')
 r2.lower_bound = 2
-r2.upper_bound = 10
+r2.upper_bound = 1000
 r2.add_metabolites({m1:1,m2:1,m3:-1})
 r2.gene_reaction_rule = 'EC'
 #ES -> E + P
@@ -37,15 +37,15 @@ r3.gene_reaction_rule = 'P'
 
 #->E
 r4 = Reaction('r4')
-r4.lower_bound = 5
+r4.lower_bound = 0
 r4.upper_bound = 5
 r4.add_metabolites({m1:1})
 r4.gene_reaction_rule = 'E'
 
 #->S
 r5 = Reaction('r5')
-r5.lower_bound =1000
-r5.upper_bound = 1000
+r5.lower_bound = 5
+r5.upper_bound = 5
 r5.add_metabolites({m2:1})
 r5.gene_reaction_rule = 'S'
 

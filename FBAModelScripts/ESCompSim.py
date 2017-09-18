@@ -52,7 +52,7 @@ r5.gene_reaction_rule = 'S'
 #S->
 r6 = Reaction('r6')
 r6.lower_bound = 0
-r6.upper_bound = 1000
+r6.upper_bound = 0
 r6.add_metabolites({m2:-1})
 r6.gene_reaction_rule = 'S'
 

@@ -24,7 +24,7 @@ def func(y,t,k1,kO1,k2,inletS):
             k2*ES]
     return dydt
 
-def params(So,Eo,v):
+def params(Eo,So,v):
     Ces = Eo * So * v[1] / ( v[4] + v[1] * (So  +1 ))
     k1 = v[0] / So / (Eo - Ces)
     kneg1 =v[1] / Ces
@@ -35,10 +35,10 @@ def params(So,Eo,v):
 y0 = [5.0, 1000.0, 0.0 , 0.0]
 
 t = np.linspace(0, 5000, 5000)
-sol = [sol[x.id] for x in myModel.reactions]
-print sol
+sol2 = [sol[x.id] for x in myModel.reactions]
+#print sol
 k1,k01,k2 = params(y0[0],y0[1],sol)
-print type(sol)
+#print type(sol)
 print k1
 print k01
 print k2
@@ -72,6 +72,11 @@ plt.plot(t, sol[:, 3])
 plt.xlabel('t')
 plt.ylabel('P')
 
-plt.show()
+finalConc = sol[-1,:]
+finalFlux = [k1*finalConc[0]*finalConc[1]]
+finalFlux.append(k01*finalConc[2])
+finalFlux.append(k2*finalConc[2])
 
-print(sol[-1,:])
+print finalFlux
+print np.mean((np.subtract(sol2[:-2],finalFlux))**2)
+plt.show()

@@ -34,27 +34,28 @@ r3.lower_bound = 0
 r3.upper_bound = 1000
 r3.add_metabolites({m3:-1,m1:1,m4:1})
 r3.gene_reaction_rule = 'P'
-
+"""
 #->E
 r4 = Reaction('r4')
 r4.lower_bound = 0
 r4.upper_bound = 5
 r4.add_metabolites({m1:1})
 r4.gene_reaction_rule = 'E'
-
+"""
 #->S
 r5 = Reaction('r5')
 r5.lower_bound = 5
 r5.upper_bound = 5
 r5.add_metabolites({m2:1})
 r5.gene_reaction_rule = 'S'
-
+"""
 #S->
 r6 = Reaction('r6')
 r6.lower_bound = 0
 r6.upper_bound = 0
 r6.add_metabolites({m2:-1})
 r6.gene_reaction_rule = 'S'
+"""
 
 #P->
 r7 = Reaction('r7')
@@ -68,7 +69,7 @@ r7.gene_reaction_rule = 'PD'
 
 
 myModel = cobra.Model('toyModel')
-myModel.add_reactions([r1,r2,r3,r4,r5,r6,r7])
+myModel.add_reactions([r1,r2,r3,r5,r7])
 myModel.objective = 'r7'
 
 cobra.io.write_sbml_model(myModel,'toyModel.xml',use_fbc_package=False)

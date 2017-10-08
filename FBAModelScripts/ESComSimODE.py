@@ -31,52 +31,61 @@ def params(Eo,So,v):
     k2 = v[2] / Ces
     return (k1,kneg1,k2)
 
-
-y0 = [5.0, 1000.0, 0.0 , 0.0]
-
-t = np.linspace(0, 5000, 5000)
 sol2 = [sol[x.id] for x in myModel.reactions]
-#print sol
-k1,k01,k2 = params(y0[0],y0[1],sol)
-#print type(sol)
-print k1
-print k01
-print k2
+t = np.linspace(0, 1000, 1000)
+file = open('ICTesting.txt','w')
+meanError = []
+p = [5 ,100, 500, 1000]
+p = [5+x for x in range(996)]
+for z in p:
 
-inletS = 5
-sol = odeint(func, y0, t, args=(k1,k01,k2,inletS))
+    y0 = [5.0, z, 0.0 , 0.0]
 
-fig = plt.figure(1)
-ax1 = fig.add_subplot(221)
-plt.plot(t, sol[:, 0])
-plt.xlabel('t')
-plt.ylabel('E')
+    file.write(str(z)+ '\n')
+    k1,k01,k2 = params(y0[0],y0[1],sol2)
+    #print type(sol)
+    file.write(str(k1)+' ')
+    file.write(str(k01)+ ' ')
+    file.write(str(k2)+ '\n')
 
-ax2 = fig.add_subplot(222)
-ax2.yaxis.set_label_position("right")
-ax2.yaxis.tick_right()
-plt.plot(t, sol[:, 1])
-plt.xlabel('t')
-plt.ylabel('S')
+    inletS = sol2[4]
+    sol = odeint(func, y0, t, args=(k1,k01,k2,inletS))
 
-fig = plt.figure(1)
-ax1 = fig.add_subplot(223)
-plt.plot(t, sol[:, 2])
-plt.xlabel('t')
-plt.ylabel('ES')
+    fig = plt.figure(1)
+    ax1 = fig.add_subplot(221)
+    plt.plot(t, sol[:, 0])
+    plt.xlabel('t')
+    plt.ylabel('E')
 
-ax2 = fig.add_subplot(224)
-ax2.yaxis.set_label_position("right")
-ax2.yaxis.tick_right()
-plt.plot(t, sol[:, 3])
-plt.xlabel('t')
-plt.ylabel('P')
+    ax2 = fig.add_subplot(222)
+    ax2.yaxis.set_label_position("right")
+    ax2.yaxis.tick_right()
+    plt.plot(t, sol[:, 1])
+    plt.xlabel('t')
+    plt.ylabel('S')
 
-finalConc = sol[-1,:]
-finalFlux = [k1*finalConc[0]*finalConc[1]]
-finalFlux.append(k01*finalConc[2])
-finalFlux.append(k2*finalConc[2])
+    fig = plt.figure(1)
+    ax1 = fig.add_subplot(223)
+    plt.plot(t, sol[:, 2])
+    plt.xlabel('t')
+    plt.ylabel('ES')
 
-print finalFlux
-print np.mean((np.subtract(sol2[:-2],finalFlux))**2)
+    ax2 = fig.add_subplot(224)
+    ax2.yaxis.set_label_position("right")
+    ax2.yaxis.tick_right()
+    plt.plot(t, sol[:, 3])
+    plt.xlabel('t')
+    plt.ylabel('P')
+
+    finalConc = sol[-1,:]
+    finalFlux = [k1*finalConc[0]*finalConc[1]]
+    finalFlux.append(k01*finalConc[2])
+    finalFlux.append(k2*finalConc[2])
+
+    [file.write(str(x) + ' ') for x in finalFlux]
+    file.write('\n'+str(np.mean(np.subtract(sol2[:-2],finalFlux)**2))+ '\n')
+    meanError.append(np.mean(np.subtract(sol2[:-2],finalFlux)**2))
+
+plt.figure(2)
+plt.plot(p,meanError)
 plt.show()

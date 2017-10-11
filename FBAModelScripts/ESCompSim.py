@@ -44,8 +44,8 @@ r4.gene_reaction_rule = 'E'
 """
 #->S
 r5 = Reaction('r5')
-r5.lower_bound = 5
-r5.upper_bound = 5
+r5.lower_bound = 0
+r5.upper_bound = 1000
 r5.add_metabolites({m2:1})
 r5.gene_reaction_rule = 'S'
 """
@@ -59,8 +59,8 @@ r6.gene_reaction_rule = 'S'
 
 #P->
 r7 = Reaction('r7')
-r7.lower_bound = 0
-r7.upper_bound = 1000
+r7.lower_bound = 13
+r7.upper_bound = 13
 r7.add_metabolites({m4:-1})
 r7.gene_reaction_rule = 'PD'
 

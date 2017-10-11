@@ -35,21 +35,26 @@ sol2 = [sol[x.id] for x in myModel.reactions]
 t = np.linspace(0, 1000, 1000)
 file = open('ICTesting.txt','w')
 meanError = []
-p = [5 ,100, 500, 1000]
-p = [5+x for x in range(996)]
+p = [1/10.,1,2,3,4,5,6,7,8,9,10,100,1000]
+# p = [3,4,5,6,7,8,]
+##p = [5+2*x for x in range(500)]
 for z in p:
 
-    y0 = [5.0, z, 0.0 , 0.0]
+    sol3 = [x * z for x in sol2]
+
+    y0 = [5.0, 1000, 0.0 , 0.0]
+
+    print z
 
     file.write(str(z)+ '\n')
-    k1,k01,k2 = params(y0[0],y0[1],sol2)
+    k1,k01,k2 = params(y0[0],y0[1],sol3)
     #print type(sol)
     file.write(str(k1)+' ')
     file.write(str(k01)+ ' ')
     file.write(str(k2)+ '\n')
 
-    inletS = sol2[4]
-    sol = odeint(func, y0, t, args=(k1,k01,k2,inletS))
+    inletS = sol3[4]
+    sol = odeint(func, y0, t, args=(k1,k01,k2,sol3[3]))
 
     fig = plt.figure(1)
     ax1 = fig.add_subplot(221)
@@ -83,8 +88,8 @@ for z in p:
     finalFlux.append(k2*finalConc[2])
 
     [file.write(str(x) + ' ') for x in finalFlux]
-    file.write('\n'+str(np.mean(np.subtract(sol2[:-2],finalFlux)**2))+ '\n')
-    meanError.append(np.mean(np.subtract(sol2[:-2],finalFlux)**2))
+    file.write('\n'+str(np.mean(np.subtract(sol3[:-2],finalFlux)**2))+ '\n')
+    meanError.append(np.sqrt(np.mean(np.subtract(sol3[:-2],finalFlux)**2)))
 
 plt.figure(2)
 plt.plot(p,meanError)

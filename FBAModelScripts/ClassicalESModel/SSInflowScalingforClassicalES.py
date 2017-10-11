@@ -1,10 +1,11 @@
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 import cobra.io
 
-myModel = cobra.io.read_sbml_model('toyModel.xml')
+myModel = cobra.io.read_sbml_model('ClassicalESModel.xml')
 myModel.solver = 'gurobi'
 
 sol = myModel.optimize()
@@ -32,19 +33,21 @@ def params(Eo,So,v):
     return (k1,kneg1,k2)
 
 sol2 = [sol[x.id] for x in myModel.reactions]
+fig = plt.figure(1)
+
 t = np.linspace(0, 1000, 1000)
 file = open('ICTesting.txt','w')
 meanError = []
-p = [1/10.,1,2,3,4,5,6,7,8,9,10,100,1000]
-# p = [3,4,5,6,7,8,]
-##p = [5+2*x for x in range(500)]
+#p = [1/10.,1,2,3,4,5,6,7,8,9,10,100,1000]
+p = [5,50,500,1000]
+p = [.1,.2,.3,.4,.5,.6,.7,.8,.9,1.0]
+#p = [5+2*x for x in range(500)]
 for z in p:
 
-    sol3 = [x * z for x in sol2]
+    sol3 = [x * 1. for x in sol2]
 
-    y0 = [5.0, 1000, 0.0 , 0.0]
+    y0 = [5.0, 5, 0 , 0.0]
 
-    print z
 
     file.write(str(z)+ '\n')
     k1,k01,k2 = params(y0[0],y0[1],sol3)
@@ -53,14 +56,15 @@ for z in p:
     file.write(str(k01)+ ' ')
     file.write(str(k2)+ '\n')
 
-    inletS = sol3[4]
-    sol = odeint(func, y0, t, args=(k1,k01,k2,sol3[3]))
+    inletS = sol3[3]
+    sol = odeint(func, y0, t, args=(k1,k01,k2,sol3[3] * z))
 
-    fig = plt.figure(1)
     ax1 = fig.add_subplot(221)
     plt.plot(t, sol[:, 0])
     plt.xlabel('t')
     plt.ylabel('E')
+    plt.title('           ES Dyanmics with SS Inflow Scaling: S0 = 5')
+
 
     ax2 = fig.add_subplot(222)
     ax2.yaxis.set_label_position("right")
@@ -69,7 +73,6 @@ for z in p:
     plt.xlabel('t')
     plt.ylabel('S')
 
-    fig = plt.figure(1)
     ax1 = fig.add_subplot(223)
     plt.plot(t, sol[:, 2])
     plt.xlabel('t')
@@ -86,11 +89,24 @@ for z in p:
     finalFlux = [k1*finalConc[0]*finalConc[1]]
     finalFlux.append(k01*finalConc[2])
     finalFlux.append(k2*finalConc[2])
+    print('So = '+str(z))
+    print finalFlux
+    print '\n\n'
 
     [file.write(str(x) + ' ') for x in finalFlux]
     file.write('\n'+str(np.mean(np.subtract(sol3[:-2],finalFlux)**2))+ '\n')
     meanError.append(np.sqrt(np.mean(np.subtract(sol3[:-2],finalFlux)**2)))
 
-plt.figure(2)
+#fig.tight_layout()
+pp = PdfPages('ClassicalESModelInflowSensitivityS0_5.pdf')
+pp.savefig(fig)
+fig = plt.figure(2)
 plt.plot(p,meanError)
+plt.title('Root Mean Squared Error')
+plt.xlabel('Percentage of Required Inflow')
+plt.ylabel('Error')
+fig.tight_layout()
+pp.savefig(fig)
 plt.show()
+
+pp.close()

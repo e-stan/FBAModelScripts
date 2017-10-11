@@ -72,5 +72,5 @@ myModel = cobra.Model('toyModel')
 myModel.add_reactions([r1,r2,r3,r5,r7])
 myModel.objective = 'r7'
 
-cobra.io.write_sbml_model(myModel,'toyModel.xml',use_fbc_package=False)
+cobra.io.write_sbml_model(myModel,'ClassicalESModel.xml',use_fbc_package=False)
 

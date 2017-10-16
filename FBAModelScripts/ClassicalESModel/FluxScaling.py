@@ -40,11 +40,11 @@ file = open('ICTesting.txt','w')
 meanError = []
 #p = [1/10.,1,2,3,4,5,6,7,8,9,10,100,1000]
 p = [5,50,500,1000]
-p = [.01,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.0]
+p = [.000001,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.0]
 #p = [5+2*x for x in range(500)]
 for z in p:
 
-    sol3 = [x * z * 100 for x in sol2]
+    sol3 = [x * z * 1000000 for x in sol2]
 
     y0 = [5.0, 1000, 0 , 0.0]
 
@@ -98,10 +98,10 @@ for z in p:
     meanError.append(np.sqrt(np.mean(np.subtract(sol3[:-2],finalFlux)**2)))
 
 #fig.tight_layout()
-pp = PdfPages('ClassicalESModelVScaling1-100.pdf')
+pp = PdfPages('ClassicalESModelVScaling1-1000000.pdf')
 pp.savefig(fig)
 fig = plt.figure(2)
-plt.plot([x*100 for x in p],meanError)
+plt.plot([x*1000000 for x in p],meanError)
 plt.title('Root Mean Squared Error')
 plt.xlabel('k')
 plt.ylabel('Error')

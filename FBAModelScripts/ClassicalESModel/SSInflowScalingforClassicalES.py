@@ -45,8 +45,9 @@ p = [.1,.2,.3,.4,.5,.6,.7,.8,.9,1.0]
 for z in p:
 
     sol3 = [x * 1. for x in sol2]
+    sol3[3] = sol3[3] * z
 
-    y0 = [5.0, 5, 0 , 0.0]
+    y0 = [5.0, 1000., 0.0 , 0.0]
 
 
     file.write(str(z)+ '\n')
@@ -57,13 +58,13 @@ for z in p:
     file.write(str(k2)+ '\n')
 
     inletS = sol3[3]
-    sol = odeint(func, y0, t, args=(k1,k01,k2,sol3[3] * z))
+    sol = odeint(func, y0, t, args=(k1,k01,k2,sol3[3]))
 
     ax1 = fig.add_subplot(221)
     plt.plot(t, sol[:, 0])
     plt.xlabel('t')
     plt.ylabel('E')
-    plt.title('           ES Dyanmics with SS Inflow Scaling: S0 = 5')
+    plt.title('           ES Dyanmics with SS Inflow Scaling: S0 = 1000')
 
 
     ax2 = fig.add_subplot(222)
@@ -98,7 +99,7 @@ for z in p:
     meanError.append(np.sqrt(np.mean(np.subtract(sol3[:-2],finalFlux)**2)))
 
 #fig.tight_layout()
-pp = PdfPages('ClassicalESModelInflowSensitivityS0_5.pdf')
+pp = PdfPages('ClassicalESModelInflowSensitivityS0_1000.pdf')
 pp.savefig(fig)
 fig = plt.figure(2)
 plt.plot(p,meanError)

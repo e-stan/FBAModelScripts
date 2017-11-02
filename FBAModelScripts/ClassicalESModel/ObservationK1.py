@@ -64,7 +64,7 @@ for z in p:
     plt.plot(t, sol[:, 0])
     plt.xlabel('t')
     plt.ylabel('E')
-    plt.title('           Reaction Network Dynamics with k1 1-10e')
+    plt.title('           Reaction Network Dynamics with k1 = [1,10e9]')
 
 
     ax2 = fig.add_subplot(222)
@@ -126,16 +126,18 @@ for z in p:
     meanError.append(np.sqrt(np.mean(np.subtract(sol3[:-2],finalFlux)**2)))
 
 fig.tight_layout()
-pp = PdfPages('ClassicalESModelRandomK1Dynamic.pdf')
-#pp.savefig(fig)
+pp = PdfPages('ClassicalESModelK1Observation.pdf')
+pp.savefig(fig)
 #pp.savefig(fig2)
-fig = plt.figure(3)
+#fig = plt.figure(3)
+"""
 plt.scatter(p,meanError)
 plt.title('Root Mean Squared Error')
 plt.xlabel('Percentage of Required Inflow')
 plt.ylabel('Error')
 fig.tight_layout()
 pp.savefig(fig)
+"""
 plt.show()
 
 pp.close()

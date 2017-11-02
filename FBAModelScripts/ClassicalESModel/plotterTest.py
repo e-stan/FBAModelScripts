@@ -33,8 +33,8 @@ def params(Eo,So,v,sigma):
     return (k1,kneg1,k2)
 
 sol2 = [sol[x.id] for x in myModel.reactions]
-fig = plt.figure(1)
-#fig2 = plt.figure(2)
+fig,ax1 = plt.subplots(2,2)
+fig2,ax2 = plt.subplots(2,2)
 
 t = np.linspace(0, 1000, 1000)
 file = open('RandK1Testing.txt','w')
@@ -42,7 +42,7 @@ meanError = []
 
 p = [random.uniform(.0000001,10) for _ in range(1000) ]
 p = [10**x for x in range(10)]
-
+p = [10]
 for z in p:
 
     sol3 = [x * 1. for x in sol2]
@@ -60,57 +60,21 @@ for z in p:
     inletS = sol3[3]
     sol = odeint(func, y0, t, args=(k1,k01,k2,sol3[3]))
 
-    ax1 = fig.add_subplot(221)
-    plt.plot(t, sol[:, 0])
-    plt.xlabel('t')
-    plt.ylabel('E')
-    plt.title('           Reaction Network Dynamics with k1 1-10e')
+    #fig.add_subplot(221)
+    ax1[0][0].plot(t, sol[:, 0])
+    ax1[0][0].set_xlabel('t')
+    ax1[0][0].set_ylabel('E')
+    ax1[0][0].set_title('           Reaction Network Dynamics with k1 1-10e')
 
 
-    ax2 = fig.add_subplot(222)
-    ax2.yaxis.set_label_position("right")
-    ax2.yaxis.tick_right()
-    plt.plot(t, sol[:, 1])
-    plt.xlabel('t')
-    plt.ylabel('S')
+   # fig2.add_subplot(221)
+    ax2[0][0].scatter(z, sol[-1, 0])
+   # fig2.xlabel('k1')
+   # fig2.ylabel('E')
+   # fig2.title('           Final Concentration Phase Plot')
+   # ax2.set
 
-    ax1 = fig.add_subplot(223)
-    plt.plot(t, sol[:, 2])
-    plt.xlabel('t')
-    plt.ylabel('ES')
 
-    ax2 = fig.add_subplot(224)
-    ax2.yaxis.set_label_position("right")
-    ax2.yaxis.tick_right()
-    plt.plot(t, sol[:, 3])
-    plt.xlabel('t')
-    plt.ylabel('P')
-    """
-    ax3 = fig2.add_subplot(221)
-    plt.scatter(z, sol[-1, 0])
-    plt.xlabel('k1')
-    plt.ylabel('E')
-    plt.title('           Final Concentration Phase Plot')
-
-    ax4 = fig2.add_subplot(222)
-    ax4.yaxis.set_label_position("right")
-    ax4.yaxis.tick_right()
-    plt.scatter(z, sol[-1, 1])
-    plt.xlabel('k1')
-    plt.ylabel('S')
-
-    ax3 = fig2.add_subplot(223)
-    plt.scatter(z, sol[-1, 2])
-    plt.xlabel('k1')
-    plt.ylabel('ES')
-
-    ax4 = fig2.add_subplot(224)
-    ax4.yaxis.set_label_position("right")
-    ax4.yaxis.tick_right()
-    plt.scatter(z, sol[-1, 3])
-    plt.xlabel('k1')
-    plt.ylabel('P')
-    """
 
 
     finalConc = sol[-1,:]

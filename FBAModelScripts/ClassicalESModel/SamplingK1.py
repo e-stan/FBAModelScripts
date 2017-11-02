@@ -14,7 +14,7 @@ import cobra.io
 
 #Other possibilites k-1 + k2 = 1 or sigma (probability)
 
-k1_max = .1
+k1_max = 10
 
 myModel = cobra.io.read_sbml_model('ClassicalESModel.xml')
 myModel.solver = 'gurobi'
@@ -44,7 +44,8 @@ def params(Eo,So,v,sigma):
     return (k1,kneg1,k2)
 
 sol2 = [sol[x.id] for x in myModel.reactions]
-fig = plt.figure(1)
+fig1,ax1 = plt.subplots(2,2)
+fig2,ax2 = plt.subplots(2,2)
 
 t = np.linspace(0, 1000, 1000)
 file = open('RandK1Testing.txt','w')
@@ -82,65 +83,58 @@ for z in p:
     file.write('\n'+str(np.mean(np.subtract(sol3[:-2],finalFlux)**2))+ '\n')
     meanError.append(np.sqrt(np.mean(np.subtract(sol3[:-2],finalFlux)**2)))
     if meanError[-1] < .01:
+
+        ax1[0][0].plot(t, sol[:, 0])
+        ax1[0][0].set_xlabel('t')
+        ax1[0][0].set_ylabel('E')
+        ax1[0][0].set_title('           ES Dynamics with Random k1 Value < ' + str(k1_max))
+    
+    
+        ax1[0][1].yaxis.set_label_position("right")
+        ax1[0][1].yaxis.tick_right()
+        ax1[0][1].plot(t, sol[:, 1])
+        ax1[0][1].set_xlabel('t')
+        ax1[0][1].set_ylabel('S')
+    
+        ax1[1][0].plot(t, sol[:, 2])
+        ax1[1][0].set_xlabel('t')
+        ax1[1][0].set_ylabel('ES')
+    
+        ax1[1][1].yaxis.set_label_position("right")
+        ax1[1][1].yaxis.tick_right()
+        ax1[1][1].plot(t, sol[:, 3])
+        ax1[1][1].set_xlabel('t')
+        ax1[1][1].set_ylabel('P')
+
+
+
+        ax2[0][0].scatter(z, sol[-1, 0])
+        ax2[0][0].set_xlabel('k1')
+        ax2[0][0].set_ylabel('E')
+        ax2[0][0].set_title('           Final Concentration Phase Plot')
+
+        ax2[0][1].yaxis.set_label_position("right")
+        ax2[0][1].yaxis.tick_right()
+        ax2[0][1].scatter(z, sol[-1, 1])
+        ax2[0][1].set_xlabel('k1')
+        ax2[0][1].set_ylabel('S')
+
+        ax2[1][0].scatter(z, sol[-1, 2])
+        ax2[1][0].set_xlabel('k1')
+        ax2[1][0].set_ylabel('ES')
+
+        ax2[1][1].yaxis.set_label_position("right")
+        ax2[1][1].yaxis.tick_right()
+        ax2[1][1].scatter(z, sol[-1, 3])
+        ax2[1][1].set_xlabel('k1')
+        ax2[1][1].set_ylabel('P')
         #"""
-        ax1 = fig.add_subplot(221)
-        plt.plot(t, sol[:, 0])
-        plt.xlabel('t')
-        plt.ylabel('E')
-        plt.title('           ES Dyanmics with Random k1 Value < ' + str(k1_max))
-    
-    
-        ax2 = fig.add_subplot(222)
-        ax2.yaxis.set_label_position("right")
-        ax2.yaxis.tick_right()
-        plt.plot(t, sol[:, 1])
-        plt.xlabel('t')
-        plt.ylabel('S')
-    
-        ax1 = fig.add_subplot(223)
-        plt.plot(t, sol[:, 2])
-        plt.xlabel('t')
-        plt.ylabel('ES')
-    
-        ax2 = fig.add_subplot(224)
-        ax2.yaxis.set_label_position("right")
-        ax2.yaxis.tick_right()
-        plt.plot(t, sol[:, 3])
-        plt.xlabel('t')
-        plt.ylabel('P')
-        """
 
-
-        ax3 = fig.add_subplot(221)
-        plt.scatter(z, sol[-1, 0])
-        plt.xlabel('k1')
-        plt.ylabel('E')
-        plt.title('           Final Concentration Phase Plot')
-
-        ax4 = fig.add_subplot(222)
-        ax4.yaxis.set_label_position("right")
-        ax4.yaxis.tick_right()
-        plt.scatter(z, sol[-1, 1])
-        plt.xlabel('k1')
-        plt.ylabel('S')
-
-        ax3 = fig.add_subplot(223)
-        plt.scatter(z, sol[-1, 2])
-        plt.xlabel('k1')
-        plt.ylabel('ES')
-
-        ax4 = fig.add_subplot(224)
-        ax4.yaxis.set_label_position("right")
-        ax4.yaxis.tick_right()
-        plt.scatter(z, sol[-1, 3])
-        plt.xlabel('k1')
-        plt.ylabel('P')
-        """
-
-fig.tight_layout()
-pp = PdfPages('ClassicalESModelRandomK1Dynamick1-'+str(k1_max)+'.pdf')
-pp.savefig(fig)
-#pp.savefig(fig2)
+fig1.tight_layout()
+fig2.tight_layout()
+pp = PdfPages('ClassicalESModelRandomK1Phasek1-'+str(k1_max)+'.pdf')
+pp.savefig(fig1)
+pp.savefig(fig2)
 fig = plt.figure(3)
 plt.scatter(p,meanError)
 plt.title('Root Mean Squared Error')

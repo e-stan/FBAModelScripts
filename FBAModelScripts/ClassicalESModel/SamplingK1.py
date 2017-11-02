@@ -15,6 +15,7 @@ import cobra.io
 #Other possibilites k-1 + k2 = 1 or sigma (probability)
 
 k1_max = 10
+nsamples = 1000
 
 myModel = cobra.io.read_sbml_model('ClassicalESModel.xml')
 myModel.solver = 'gurobi'
@@ -51,7 +52,7 @@ t = np.linspace(0, 1000, 1000)
 file = open('RandK1Testing.txt','w')
 meanError = []
 
-p = [random.uniform(.0000001,k1_max) for _ in range(1000) ]
+p = [random.uniform(.0000001,k1_max) for _ in range(nsamples) ]
 #p = [10**x+.001 for x in range(10)]
 
 for z in p:
@@ -87,7 +88,7 @@ for z in p:
         ax1[0][0].plot(t, sol[:, 0])
         ax1[0][0].set_xlabel('t')
         ax1[0][0].set_ylabel('E')
-        ax1[0][0].set_title('           ES Dynamics with Random k1 Value < ' + str(k1_max))
+        ax1[0][0].set_title('             Network Dynamics Sampling\n k1 = [1e-7,' + str(k1_max)+'] n = '+ str(nsamples))
     
     
         ax1[0][1].yaxis.set_label_position("right")
@@ -111,7 +112,7 @@ for z in p:
         ax2[0][0].scatter(z, sol[-1, 0])
         ax2[0][0].set_xlabel('k1')
         ax2[0][0].set_ylabel('E')
-        ax2[0][0].set_title('           Final Concentration Phase Plot')
+        ax2[0][0].set_title('           Phase Plane: Final Concentration vs k1')
 
         ax2[0][1].yaxis.set_label_position("right")
         ax2[0][1].yaxis.tick_right()
@@ -132,7 +133,7 @@ for z in p:
 
 fig1.tight_layout()
 fig2.tight_layout()
-pp = PdfPages('ClassicalESModelRandomK1Phasek1-'+str(k1_max)+'.pdf')
+pp = PdfPages('ClassicalESModelRandomK1_0-'+str(k1_max)+'.pdf')
 pp.savefig(fig1)
 pp.savefig(fig2)
 fig = plt.figure(3)

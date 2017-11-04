@@ -14,7 +14,7 @@ import cobra.io
 
 #Other possibilites k-1 + k2 = 1 or sigma (probability)
 
-k1_max = .2
+k1_max = 5
 nsamples = 1000
 
 myModel = cobra.io.read_sbml_model('ClassicalESModel.xml')

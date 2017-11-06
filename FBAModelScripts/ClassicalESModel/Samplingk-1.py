@@ -13,7 +13,8 @@ import cobra.io
 
 # Other possibilites k-1 + k2 = 1 or sigma (probability)
 
-kneg1_max = 1
+kneg1_max = 2000
+param_min = 100
 nsamples = 1000
 
 myModel = cobra.io.read_sbml_model('ClassicalESModel.xml')
@@ -53,7 +54,7 @@ t = np.linspace(0, 1000, 1000)
 file = open('RandK2Testing.txt', 'w')
 meanError = []
 
-p = [random.uniform(.0000001, kneg1_max) for _ in range(nsamples)]
+p = [random.uniform(param_min, kneg1_max) for _ in range(nsamples)]
 # p = [10**x+.001 for x in range(10)]
 
 for z in p:
@@ -88,7 +89,8 @@ for z in p:
         ax1[0][0].set_xlabel('t')
         ax1[0][0].set_ylabel('E')
         ax1[0][0].set_title(
-            '             Network Dynamics Sampling\n k-1 = [1e-7,' + str(kneg1_max) + '] n = ' + str(nsamples))
+            '             Network Dynamics Sampling\n k-1 = [' + str(param_min) + ',' + str(kneg1_max) + '] n = ' + str(nsamples))
+        ax1[0][0].set_ylim(-1,7)
 
         ax1[0][1].yaxis.set_label_position("right")
         ax1[0][1].yaxis.tick_right()
@@ -99,6 +101,8 @@ for z in p:
         ax1[1][0].plot(t, sol[:, 2])
         ax1[1][0].set_xlabel('t')
         ax1[1][0].set_ylabel('ES')
+        ax1[1][0].set_ylim(-1,7)
+
 
         ax1[1][1].yaxis.set_label_position("right")
         ax1[1][1].yaxis.tick_right()
@@ -130,13 +134,13 @@ for z in p:
 
 fig1.tight_layout()
 fig2.tight_layout()
-pp = PdfPages('ClassicalESModelRandomK-1_0-' + str(kneg1_max) + '.pdf')
+pp = PdfPages('ClassicalESModelRandomK-1_'  + str(param_min) +'-' + str(kneg1_max) + '.pdf')
 pp.savefig(fig1)
 pp.savefig(fig2)
 fig = plt.figure(3)
 plt.scatter(p, meanError)
 plt.title('Root Mean Squared Error')
-plt.xlabel('k1')
+plt.xlabel('k-1')
 plt.ylabel('Error')
 fig.tight_layout()
 pp.savefig(fig)

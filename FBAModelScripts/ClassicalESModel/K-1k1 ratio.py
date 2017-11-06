@@ -13,7 +13,8 @@ import cobra.io
 
 # Other possibilites k-1 + k2 = 1 or sigma (probability)
 
-k1_max = 15
+k1_max = 2000
+para_min = 100
 nsamples = 1000
 
 myModel = cobra.io.read_sbml_model('ClassicalESModel.xml')
@@ -38,24 +39,27 @@ def func(y, t, k1, kO1, k2, inletS):
 
 
 def params(Eo, So, v, sigma):
-    kneg1 = sigma
-    Ces = v[1]/kneg1
-    k1 = v[0]/(Eo-Ces)/So
+    k1 = sigma
+    Ces = Eo - v[0] / So / k1
+    kneg1 = v[1] / Ces
     k2 = v[2] / Ces
     return (k1, kneg1, k2)
 
 
 sol2 = [sol[x.id] for x in myModel.reactions]
 fig1, ax1 = plt.subplots(2, 1)
-fig2, ax2 = plt.subplots(2, 2)
+#fig2, ax2 = plt.subplots(2, 2)
 
 t = np.linspace(0, 1000, 1000)
 file = open('RandK1Testing.txt', 'w')
 meanError = []
 
-p = [random.uniform(.0000001, k1_max) for _ in range(nsamples)]
+p = [random.uniform(para_min, k1_max) for _ in range(nsamples)]
 # p = [10**x+.001 for x in range(10)]
-
+y0 = [5.0, 1000., 0.0, 0.0]
+k1,k01,k2 =params(y0[0], y0[1], sol2, para_min)
+kone = [k01]
+p.sort()
 for z in p:
 
     sol3 = [x * 1. for x in sol2]
@@ -76,6 +80,51 @@ for z in p:
     finalFlux = [k1 * finalConc[0] * finalConc[1]]
     finalFlux.append(k01 * finalConc[2])
     finalFlux.append(k2 * finalConc[2])
+    print('k1 = ' + str(z))
+    print finalFlux
+    print '\n\n'
+
+    [file.write(str(x) + ' ') for x in finalFlux]
+    file.write('\n' + str(np.mean(np.subtract(sol3[:-2], finalFlux) ** 2)) + '\n')
+    meanError.append(np.sqrt(np.mean(np.subtract(sol3[:-2], finalFlux) ** 2)))
+    if meanError[-1] < .01:
+        ax1[0].scatter(k1, k01-kone[-1])
+        ax1[0].set_xlabel('k1')
+        ax1[0].set_ylabel('k1/k-1')
+        ax1[0].set_title(
+            '             Rate Constant Relationships\n k1,k-1 = [' + str(para_min) +',' + str(k1_max) + '] n = ' + str(nsamples))
+        kone.append(k01)
+
+
+def params(Eo, So, v, sigma):
+    kneg1 = sigma
+    Ces = v[1]/kneg1
+    k1 = v[0]/(Eo-Ces)/So
+    k2 = v[2] / Ces
+    return (k1, kneg1, k2)
+k1,k01,k2 =params(y0[0], y0[1], sol2, para_min)
+kneg1 = [k1]
+for z in p:
+
+    sol3 = [x * 1. for x in sol2]
+
+    y0 = [5.0, 1000., 0.0, 0.0]
+
+    file.write(str(z) + '\n')
+    k1, k01, k2 = params(y0[0], y0[1], sol3, z)
+
+    # print type(sol)
+    file.write(str(k1) + ' ')
+    file.write(str(k01) + ' ')
+    file.write(str(k2) + '\n')
+
+    inletS = sol3[3]
+    sol = odeint(func, y0, t, args=(k1, k01, k2, sol3[3]))
+
+    finalConc = sol[-1, :]
+    finalFlux = [k1 * finalConc[0] * finalConc[1]]
+    finalFlux.append(k01 * finalConc[2])
+    finalFlux.append(k2 * finalConc[2])
     print('k-1 = ' + str(z))
     print finalFlux
     print '\n\n'
@@ -84,50 +133,20 @@ for z in p:
     file.write('\n' + str(np.mean(np.subtract(sol3[:-2], finalFlux) ** 2)) + '\n')
     meanError.append(np.sqrt(np.mean(np.subtract(sol3[:-2], finalFlux) ** 2)))
     if meanError[-1] < .01:
-        ax1[0].scatter(k01, k1)
-        ax1[0].set_xlabel('k-1')
-        ax1[0].set_ylabel('k1')
-        ax1[0].set_title(
-            '             Rate Constant Relationships\n k-1 = [1e-7,' + str(k1_max) + '] n = ' + str(nsamples))
 
-        ax1[1].scatter(k01, k2)
+        ax1[1].scatter(k01,k1-kneg1[-1])
         ax1[1].set_xlabel('k-1')
-        ax1[1].set_ylabel('k2')
+        ax1[1].set_ylabel('k-1/k1')
+        kneg1.append(k1)
 
-        ax2[0][0].scatter(z, sol[-1, 0])
-        ax2[0][0].set_xlabel('k-1')
-        ax2[0][0].set_ylabel('E')
-        ax2[0][0].set_title('           Phase Plane: Final Concentration vs k-1')
 
-        ax2[0][1].yaxis.set_label_position("right")
-        ax2[0][1].yaxis.tick_right()
-        ax2[0][1].scatter(z, sol[-1, 1])
-        ax2[0][1].set_xlabel('k-1')
-        ax2[0][1].set_ylabel('S')
-
-        ax2[1][0].scatter(z, sol[-1, 2])
-        ax2[1][0].set_xlabel('k-1')
-        ax2[1][0].set_ylabel('ES')
-
-        ax2[1][1].yaxis.set_label_position("right")
-        ax2[1][1].yaxis.tick_right()
-        ax2[1][1].scatter(z, sol[-1, 3])
-        ax2[1][1].set_xlabel('k-1')
-        ax2[1][1].set_ylabel('P')
-        # """
+print "std k1 = " + str(np.std(kneg1))
+print "std k-1 = " + str(np.std(kone))
 
 fig1.tight_layout()
-fig2.tight_layout()
-pp = PdfPages('ClassicalESModelRateConstantRelatK-1_0-' + str(k1_max) + '.pdf')
-pp.savefig(fig1)
-pp.savefig(fig2)
-fig = plt.figure(3)
-plt.scatter(p, meanError)
-plt.title('Root Mean Squared Error')
-plt.xlabel('k1')
-plt.ylabel('Error')
-fig.tight_layout()
-pp.savefig(fig)
+#pp = PdfPages('ClassicalESModelk-1/K10-' + str(k1_max) + '.pdf')
+#pp.savefig(fig1)
+
 plt.show()
 
-pp.close()
+#pp.close()

@@ -55,7 +55,7 @@ meanError = []
 
 p = [random.uniform(param_min,k1_max) for _ in range(nsamples) ]
 #p = [10**x+.001 for x in range(10)]
-
+p = [1]
 for z in p:
 
     sol3 = [x * 1. for x in sol2]

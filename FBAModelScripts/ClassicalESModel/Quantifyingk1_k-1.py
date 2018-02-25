@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import random
 import cobra.io
+from MAModel import *
 
 ###QUESTIONS TO BE ASKED#####
 
@@ -28,15 +29,6 @@ for x in myModel.reactions:
     print str(x.id) + ' : ' + str(x.reaction) + ' : ' + str(sol[x.id])
 
 
-def func(y, t, k1, kO1, k2, inletS):
-    E, S, ES, P = y
-    dydt = [-k1 * E * S + k2 * ES + kO1 * ES,
-            inletS - k1 * E * S + kO1 * ES,
-            k1 * E * S - k2 * ES - kO1 * ES,
-            k2 * ES]
-    return dydt
-
-
 def params(Eo, So, v, sigma):
     k1 = sigma
     Ces = Eo - v[0] / So / k1
@@ -53,7 +45,7 @@ t = np.linspace(0, 1000, 1000)
 file = open('RandK1Testing.txt', 'w')
 meanError = []
 
-p = [random.uniform(.0000001, k1_max) for _ in range(nsamples)]
+p = [random.uniform(.001, k1_max) for _ in range(nsamples)]
 # p = [10**x+.001 for x in range(10)]
 
 for z in p:
@@ -87,8 +79,8 @@ for z in p:
         ax1[0].scatter(k1, k2)
         ax1[0].set_xlabel('k1')
         ax1[0].set_ylabel('k2')
-        ax1[0].set_title(
-            '             Rate Constant Relationships\n k1 = [1e-7,' + str(k1_max) + '] n = ' + str(nsamples))
+       # ax1[0].set_title(
+        #    '             Rate Constant Relationships\n k1 = [1e-7,' + str(k1_max) + '] n = ' + str(nsamples))
 
         ax1[1].scatter(k1, k01)
         ax1[1].set_xlabel('k1')

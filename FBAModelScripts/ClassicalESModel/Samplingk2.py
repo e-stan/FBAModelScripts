@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import random
 import cobra.io
+from MAModel import *
 
 ###QUESTIONS TO BE ASKED#####
 
@@ -13,8 +14,9 @@ import cobra.io
 
 # Other possibilites k-1 + k2 = 1 or sigma (probability)
 
-k2_max = 1.
+k2_max = 2.6 * 10e3
 nsamples = 1000
+k2_min = 2.6
 
 myModel = cobra.io.read_sbml_model('ClassicalESModel.xml')
 myModel.solver = 'gurobi'
@@ -26,15 +28,6 @@ print fvaSol
 # print sol.fluxes
 for x in myModel.reactions:
     print str(x.id) + ' : ' + str(x.reaction) + ' : ' + str(sol[x.id])
-
-
-def func(y, t, k1, kO1, k2, inletS):
-    E, S, ES, P = y
-    dydt = [-k1 * E * S + k2 * ES + kO1 * ES,
-            inletS - k1 * E * S + kO1 * ES,
-            k1 * E * S - k2 * ES - kO1 * ES,
-            k2 * ES]
-    return dydt
 
 
 def params(Eo, So, v, sigma):
@@ -53,18 +46,18 @@ t = np.linspace(0, 1000, 1000)
 file = open('RandK2Testing.txt', 'w')
 meanError = []
 
-p = [random.uniform(.0000001, k2_max) for _ in range(nsamples)]
+p = [random.uniform(k2_min, k2_max) for _ in range(nsamples)]
 # p = [10**x+.001 for x in range(10)]
 
 for z in p:
 
     sol3 = [x * 1. for x in sol2]
-
     y0 = [5.0, 1000., 0.0, 0.0]
 
     file.write(str(z) + '\n')
     k1, k01, k2 = params(y0[0], y0[1], sol3, z)
     # print type(sol)
+
     file.write(str(k1) + ' ')
     file.write(str(k01) + ' ')
     file.write(str(k2) + '\n')
@@ -86,51 +79,51 @@ for z in p:
     if meanError[-1] < .01:
         ax1[0][0].plot(t, sol[:, 0])
         ax1[0][0].set_xlabel('t')
-        ax1[0][0].set_ylabel('E')
-        ax1[0][0].set_title(
-            '             Network Dynamics Sampling\n k2 = [1e-7,' + str(k2_max) + '] n = ' + str(nsamples))
+        ax1[0][0].set_ylabel('[E]')
+       # ax1[0][0].set_title(
+       #     '              Network Dynamics Sampling\n k-1 = [' + str(k2_min) + ',' + str(k2_max) + '] n = ' + str(nsamples))
 
         ax1[0][1].yaxis.set_label_position("right")
         ax1[0][1].yaxis.tick_right()
         ax1[0][1].plot(t, sol[:, 1])
         ax1[0][1].set_xlabel('t')
-        ax1[0][1].set_ylabel('S')
+        ax1[0][1].set_ylabel('[S]')
 
         ax1[1][0].plot(t, sol[:, 2])
         ax1[1][0].set_xlabel('t')
-        ax1[1][0].set_ylabel('ES')
+        ax1[1][0].set_ylabel('[ES]')
 
         ax1[1][1].yaxis.set_label_position("right")
         ax1[1][1].yaxis.tick_right()
         ax1[1][1].plot(t, sol[:, 3])
         ax1[1][1].set_xlabel('t')
-        ax1[1][1].set_ylabel('P')
+        ax1[1][1].set_ylabel('[P]')
 
         ax2[0][0].scatter(z, sol[-1, 0])
         ax2[0][0].set_xlabel('k2')
-        ax2[0][0].set_ylabel('E')
-        ax2[0][0].set_title('           Phase Plane: Final Concentration vs k2')
+        ax2[0][0].set_ylabel('[E]')
+      #  ax2[0][0].set_title('           Phase Plane: Final Concentration vs k2')
 
         ax2[0][1].yaxis.set_label_position("right")
         ax2[0][1].yaxis.tick_right()
         ax2[0][1].scatter(z, sol[-1, 1])
         ax2[0][1].set_xlabel('k2')
-        ax2[0][1].set_ylabel('S')
+        ax2[0][1].set_ylabel('[S]')
 
         ax2[1][0].scatter(z, sol[-1, 2])
         ax2[1][0].set_xlabel('k2')
-        ax2[1][0].set_ylabel('ES')
+        ax2[1][0].set_ylabel('[ES]')
 
         ax2[1][1].yaxis.set_label_position("right")
         ax2[1][1].yaxis.tick_right()
         ax2[1][1].scatter(z, sol[-1, 3])
         ax2[1][1].set_xlabel('k2')
-        ax2[1][1].set_ylabel('P')
+        ax2[1][1].set_ylabel('[P]')
         # """
 
 fig1.tight_layout()
 fig2.tight_layout()
-pp = PdfPages('ClassicalESModelRandomK2_0-' + str(k2_max) + '.pdf')
+pp = PdfPages('ClassicalESModelRandomK2_'+ str(k2_min) +'-' + str(k2_max) + '.pdf')
 pp.savefig(fig1)
 pp.savefig(fig2)
 fig = plt.figure(3)

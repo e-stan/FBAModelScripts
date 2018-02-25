@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import random
 import cobra.io
+from MAModel import *
+
 
 myModel = cobra.io.read_sbml_model('ClassicalESModel.xml')
 myModel.solver = 'gurobi'
@@ -17,13 +19,7 @@ for x in myModel.reactions:
     print str(x.id) + ' : ' + str(x.reaction) + ' : '  + str(sol[x.id])
 
 
-def func(y,t,k1,kO1,k2,inletS):
-    E,S,ES,P = y
-    dydt = [-k1*E*S + k2*ES + kO1*ES ,
-            inletS - k1*E*S + kO1*ES ,
-            k1*E*S - k2*ES - kO1*ES,
-            k2*ES]
-    return dydt
+
 
 def params(Eo,So,v,sigma):
     k1 = sigma
@@ -64,7 +60,7 @@ for z in p:
     plt.plot(t, sol[:, 0])
     plt.xlabel('t')
     plt.ylabel('E')
-    plt.title('           Reaction Network Dynamics with k1 = [1,10e9]')
+    plt.title('                        Enzymatic Kinetics with k1 = [1,10e9]')
 
 
     ax2 = fig.add_subplot(222)

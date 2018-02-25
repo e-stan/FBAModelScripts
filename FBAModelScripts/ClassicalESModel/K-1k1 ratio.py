@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import random
 import cobra.io
+from MAModel import *
 
 ###QUESTIONS TO BE ASKED#####
 
@@ -28,14 +29,6 @@ print fvaSol
 for x in myModel.reactions:
     print str(x.id) + ' : ' + str(x.reaction) + ' : ' + str(sol[x.id])
 
-
-def func(y, t, k1, kO1, k2, inletS):
-    E, S, ES, P = y
-    dydt = [-k1 * E * S + k2 * ES + kO1 * ES,
-            inletS - k1 * E * S + kO1 * ES,
-            k1 * E * S - k2 * ES - kO1 * ES,
-            k2 * ES]
-    return dydt
 
 
 def params(Eo, So, v, sigma):
